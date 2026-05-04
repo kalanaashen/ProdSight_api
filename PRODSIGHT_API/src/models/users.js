@@ -32,7 +32,7 @@ async function validateUser(user){
         email:Joi.string().email().required(),
         password:Joi.string().min(8).max(255).required()
     });
-    return await schema.validateAsync(user);
+    return Joi.validate(user,schema);
 }
 
 module.exports.User=User;
