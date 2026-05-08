@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const config = require("config");
 
-exports.createUser = async (data) => {
+exports.registerUser = async (data) => {
   try {
     const { error } = validateUser(data);
 
