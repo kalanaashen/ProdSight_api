@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+const Joi = require("joi");
 const activityLogSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -29,8 +29,21 @@ const activityLogSchema = new mongoose.Schema({
   },
 });
 
+const ActivityLog = mongoose.model("ActivityLog", activityLogSchema);
 
+const validateActivityLog = function (activityLog) {
+  const schema = Joi.object({
+    userId: Joi.string().required(),
+    keystrokes: Joi.number().required(),
+    mouseClickes: Joi.number().required(),
+    idleSeconds: Joi.number().required(),
+    activeWindow: Joi.string().required(),
+    recordedAt: Joi.date(),
+  });
+  return Joi.validate(activityLog, schema);
+};
 
-const ActivityLog = mongoose.models("ActivityLog", activityLogSchema);
-
-module.exports = ActivityLog;
+module.exports = {
+  ActivityLog,
+  validateActivityLog
+};

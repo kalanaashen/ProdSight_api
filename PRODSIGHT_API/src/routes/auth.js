@@ -31,7 +31,7 @@ async function validate(req) {
     email: Joi.string().email().required(),
     password: Joi.string().min(5).max(255).required(),
   });
-  return Joi.validate(req);
+  return Joi.validate(req, schema);
 }
 
 module.exports = router;
