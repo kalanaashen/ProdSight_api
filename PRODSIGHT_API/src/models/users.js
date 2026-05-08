@@ -1,7 +1,10 @@
 const { min } = require('lodash');
 const mongoose=require('mongoose');
 const Joi=require('joi');
-const User=mongoose.model('User',new mongoose.Schema({
+
+
+
+const userSchema=new mongoose.Schema({
     name:{
         type:String,
         required:true,
@@ -23,7 +26,14 @@ const User=mongoose.model('User',new mongoose.Schema({
         trim:true
     }
 
-}));
+})
+
+userSchema.methods.generateAuthToken=()=>{
+const token = jwt.sign({_id:this._id},config.get("jwtPrivateKey"));
+return token;
+}
+
+const User=mongoose.model('User',userSchema);
 
 
 async function validateUser(user){
