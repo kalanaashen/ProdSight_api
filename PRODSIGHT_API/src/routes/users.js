@@ -20,18 +20,14 @@ router.post("/", async (req, res) => {
   const salt = await bcrypt.genSalt(10);
   user.password = await bcrypt.hash(user.password, salt);
 
- const existingUser = await User.findOne({ email: req.body.email });
+  const existingUser = await User.findOne({ email: req.body.email });
 
-if (existingUser) {
-  return res.status(400).send("invalid username or password");
-}
-  const token = jwt.sign({_id:existingUser._id},config.get("jwtPrivateKey"));
+  if (existingUser) {
+    return res.status(400).send("invalid username or password");
+  }
+  const token = user.generateAuthToken();
   await user.save();
   res.header("x-auth-token", token).send(_.pick(user, ["name", "email"]));
-
-
-
-
 });
 
-  module.exports = router;
+module.exports = router;
