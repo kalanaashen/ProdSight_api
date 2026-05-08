@@ -40,7 +40,7 @@ const validateActivityLog = function (activityLog) {
     activeWindow: Joi.string().required(),
     recordedAt: Joi.date(),
   });
-  return Joi.validate(activityLog, schema);
+  return schema.validate(activityLog);
 };
 
 module.exports = {

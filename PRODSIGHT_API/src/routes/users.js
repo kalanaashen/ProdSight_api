@@ -26,8 +26,9 @@ router.post("/", async (req, res) => {
     return res.status(400).send("invalid username or password");
   }
   const token = user.generateAuthToken();
-  await user.save();
+  
   res.header("x-auth-token", token).send(_.pick(user, ["name", "email"]));
+  await user.save();
 });
 
 module.exports = router;

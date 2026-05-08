@@ -41,7 +41,7 @@ async function validateUser(user) {
     email: Joi.string().email().required(),
     password: Joi.string().min(8).max(255).required(),
   });
-  return Joi.validate(user, schema);
+  return schema.validate(user);
 }
 
 module.exports.User = User;
