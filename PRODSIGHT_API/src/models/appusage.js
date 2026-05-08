@@ -29,6 +29,8 @@ const appUsageSchema = new mongoose.Schema({
   },
 });
 
+const AppUsage=mongoose.model("AppUsage", appUsageSchema);
+
 function validateAppUsage(data) {
   const schema = Joi.object({
     userId: Joi.string().required(),
@@ -42,3 +44,5 @@ function validateAppUsage(data) {
 
   return schema.validate(data);
 }
+exports.AppUsage = AppUsage;
+exports.validateAppUsage = validateAppUsage;
