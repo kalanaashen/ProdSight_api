@@ -44,7 +44,7 @@ function validateAppUsage(data) {
     duration: Joi.number().required(),
     category: Joi.string()
       .valid("productive", "unproductive", "neutral")
-      .required(),
+     
   });
 
   return schema.validate(data);

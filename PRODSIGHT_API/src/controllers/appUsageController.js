@@ -6,6 +6,7 @@ exports.createAppUsage = async (req, res) => {
       userId: req.user._id,
       appName: req.body.appName,
       duration: req.body.duration,
+      windowTitle: req.body.windowTitle,
       recordedAt: req.body.recordedAt,
     });
     res.status(201).send(appUsage);

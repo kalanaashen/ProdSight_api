@@ -4,33 +4,34 @@ const { AppUsage, validateAppUsage } = require("../models/appusage");
   try {
     const { error } = validateAppUsage(data);
     if (error) {
-      throw new Error(error.details[0].message);
+      throw new Error(error.message);
     }
 
     const appUsage = new AppUsage({
-      UserId: UserId,
+      userId: data.userId,
       appName: data.appName,
       category: createCategory(data.appName),
+      windowTitle: data.windowTitle,
       duration: data.duration,
       recordedAt: data.recordedAt,
     });
-    return await appUssages.save();
+    return await appUsage.save();
   } catch (error) {
-    console.error(error.details[0].message);
+    console.error(error.message);
   }
 };
 exports.getAllAppUsage = async () => {
   try {
     return await AppUsage.find().sort({ recordedAt: -1 });
   } catch (error) {
-    console.error(error.details[0].message);
+    console.error(error.message);
   }
 };
 exports.getAppUsageByUserId = async (Id) => {
   try {
-    return await AppUsage.findById(id).sort({ recordedAt: -1 });
+    return await AppUsage.findById({ userId: Id });
   } catch (error) {
-    console.error(error.details[0].message);
+    console.error(error.message);
   }
 };
 
