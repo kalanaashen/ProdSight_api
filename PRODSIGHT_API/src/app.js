@@ -18,6 +18,7 @@ app.use(express.json());
 app.use("/api/users", require("./routes/users"));
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/activity",require("./routes/activity"));
+app.use("/api/appusage",require("./routes/appUsage"));
 
 app.get("/", (req, res) => {
   res.send("Prodsight API running");
