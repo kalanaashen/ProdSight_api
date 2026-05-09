@@ -27,6 +27,11 @@ const appUsageSchema = new mongoose.Schema({
     enum: ["productive", "unproductive", "neutral"],
     default: "neutral",
   },
+  recordedAt: {
+    type: Date,
+    default: Date.now,
+    required: true,
+  }
 });
 
 const AppUsage=mongoose.model("AppUsage", appUsageSchema);
