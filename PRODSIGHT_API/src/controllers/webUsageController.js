@@ -1,4 +1,4 @@
-const { webUsageService } = require("../services");
+const { webUsageService } = require("../services/webUsageService");
 
 exports.getWebUsageByUserId = async (req, res) => {
   try {
@@ -30,3 +30,4 @@ exports.getWebUsage = async (req, res) => {
     res.status(500).send({ error: error.message });
   }
 };
+
