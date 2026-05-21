@@ -4,7 +4,7 @@ const { User } = require("../models/users");
 
 const {
   validateLogin,
-} = require("/home/kalana/Documents/prodsight_api/ProdSight_api/PRODSIGHT_API/validators/authValidator.js");
+} = require("../validators/authValidator");
 
 exports.loginUser = async (data) => {
   const { error } = validateLogin(data);

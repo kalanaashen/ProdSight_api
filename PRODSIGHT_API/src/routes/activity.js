@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const auth = require("/home/kalana/Documents/prodsight_api/ProdSight_api/PRODSIGHT_API/middleware/auth.js");
+const auth = require("../../middleware/auth");
 
 const {
   getActivities,

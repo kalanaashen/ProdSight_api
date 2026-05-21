@@ -9,17 +9,21 @@ if (!config.get("jwtPrivateKey")) {
   process.exit(1);
 }
 
+require("dotenv").config();
+
 mongoose
-  .connect("mongodb://127.0.0.1:27017/prodsight")
-  .then(()=>{console.log("Connected to MongoDB...")})
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("Connected to MongoDB...");
+  })
   .catch((err) => console.error("Could not connect to MongoDB...", err));
 app.use(cors());
 app.use(express.json());
 app.use("/api/users", require("./routes/users"));
 app.use("/api/auth", require("./routes/auth"));
-app.use("/api/activity",require("./routes/activity"));
-app.use("/api/appusage",require("./routes/appUsage"));
-
+app.use("/api/activity", require("./routes/activity"));
+app.use("/api/appusage", require("./routes/appUsage"));
+app.use("/api/webusage", require("./routes/webUsage"));
 app.get("/", (req, res) => {
   res.send("Prodsight API running");
 });

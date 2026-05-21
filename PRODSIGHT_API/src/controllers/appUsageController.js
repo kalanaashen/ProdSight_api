@@ -27,7 +27,7 @@ exports.getAppUsage=async(req,res)=>{
 
 exports.getAppUsageByUserId=async(req,res)=>{
   try {
-    const appUsage = await appUsageService.getAppUsageByUserId(req.params.id);
+    const appUsage = await appUsageService.getAppUsageByUserId(req.params.userId);
     if (!appUsage) return res.status(404).send("Not found");
     res.send(appUsage);
   } catch (err) {

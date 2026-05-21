@@ -5,11 +5,11 @@ const {
   getAppUsageByUserId,
   createAppUsage,
 } = require("../controllers/appUsageController");
-const auth = require("/home/kalana/Documents/prodsight_api/ProdSight_api/PRODSIGHT_API/middleware/auth.js");
+const auth = require("../../middleware/auth");
 
 router.get("/", auth, getAppUsage);
 
-router.get("/:id", auth, getAppUsageByUserId);
+router.get("/:userId", auth, getAppUsageByUserId);
 
 router.post("/", auth, createAppUsage);
 
