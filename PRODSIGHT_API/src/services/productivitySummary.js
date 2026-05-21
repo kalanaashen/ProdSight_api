@@ -11,7 +11,7 @@ exports.createProductivitySummary = async (data) => {
     const productivitySummary = new ProductivitySummary({
       userId: data.userId,
       productiveMinutes: calculateProductivtyTime(data.userId),
-      unproductiveMinutes: data.unproductiveMinutes,
+      unproductiveMinutes: calculateUnProductivityTime(data.userId),
       neutralMinutes: data.neutralMinutes,
       idleMinutes: data.idleMinutes,
       focusScore: data.focusScore,
@@ -81,6 +81,46 @@ async function calculateProductivtyTime(userid) {
     productiveMinutes = appProductiveMinutes + webProductiveMinutes;
 
     return productiveMinutes;
+  } catch (error) {
+    console.error(error.message);
+  }
+}
+
+async function calculateUnProductivityTime(userid) {
+  let unproductiveMinutes = 0;
+  let appUnproductiveMinutes = 0;
+  let webUnproductiveMinutes = 0;
+
+  try {
+    const appUnproductive = await AppUsage.find({
+      userId: userid,
+      category: "unproductive",
+    });
+
+    const webUnproductive = await WebUsage.find({
+      userId: userid,
+      category: "unproductive",
+    });
+
+    if (appUnproductive.length == 0) {
+      return 0;
+    }
+
+    appUnproductiveMinutes = appUnproductive.reduce((total, item) => {
+      return total + item.duration;
+    }, 0);
+
+    if (webUnproductive.length == 0) {
+      return 0;
+    }
+
+    webUnproductiveMinutes = webUnproductive.reduce((total, item) => {
+      return total + item.duration;
+    }, 0);
+
+    unproductiveMinutes = appUnproductiveMinutes + webUnproductiveMinutes;
+
+    return unproductiveMinutes;
   } catch (error) {
     console.error(error.message);
   }
