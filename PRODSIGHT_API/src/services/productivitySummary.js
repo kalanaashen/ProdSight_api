@@ -1,4 +1,3 @@
-const app = require("../app");
 const {
   ProductivitySummary,
   validateProductivitySummary,
@@ -10,50 +9,41 @@ const { ActivityLog } = require("../models/activity");
 exports.createProductivitySummary = async (data) => {
   try {
     const { error } = validateProductivitySummary(data);
-
-    const productivitySummary = new ProductivitySummary({
-      userId: data.userId,
-      productiveMinutes: await calculateProductivtyTime(
-        data.userId,
-        data.summaryDate,
-      ),
-      unproductiveMinutes: await calculateUnProductivityTime(
-        data.userId,
-        data.summaryDate,
-      ),
-      neutralMinutes: await calculateNeturalTime(data.userId, data.summaryDate),
-      idleMinutes: await findIdleTime(data.userId, data.summaryDate),
-      focusScore: await calculateFocusScore(data.userId, data.summaryDate),
-      productivityScore: await calculateProductivityScore(
-        data.userId,
-        data.summaryDate,
-      ),
-      totalWorkMinutes: await calculateTotalWorkMinute(
-        data.userId,
-        data.summaryDate,
-      ),
-      summaryDate: data.summaryDate,
-    });
-
     if (error) {
       throw new Error(error.details[0].message);
     }
+
+    const usageData = await getDailyUsageData(data.userId, data.summaryDate);
+    const productivitySummary = new ProductivitySummary({
+      userId: data.userId,
+      productiveMinutes: calculateProductivtyTime(usageData),
+      unproductiveMinutes: calculateUnProductivityTime(usageData),
+      neutralMinutes: calculateNeturalTime(usageData),
+      idleMinutes: findIdleTime(usageData),
+      focusScore: calculateFocusScore(usageData),
+      productivityScore: calculateProductivityScore(usageData),
+      totalWorkMinutes: calculateTotalWorkMinute(usageData),
+      summaryDate: data.summaryDate,
+    });
+
     return await productivitySummary.save();
   } catch (error) {
     console.error(error.message);
+    throw error;
   }
 };
 
 exports.getProductivitySummaryByUserId = async (Userid) => {
   try {
     const user = await ProductivitySummary.find({ userId: Userid });
-    if (!user) {
+    if (user.length == 0) {
       console.log("not details founnd");
       return -1;
     }
     return user;
   } catch (error) {
     console.error(error.message);
+    throw error;
   }
 };
 
@@ -62,132 +52,102 @@ exports.getProductivitySummary = async () => {
     return await ProductivitySummary.find();
   } catch (error) {
     console.error(error.message);
+    throw error;
   }
 };
 
-async function calculateProductivtyTime(userid, date) {
-  let productiveMinutes = 0;
-  let appProductiveMinutes = 0;
-  let webProductiveMinutes = 0;
-  try {
-    const appProductive = await AppUsage.find({
-      userId: userid,
-      category: "productive",
-      recordedAt: date,
-    });
+function calculateProductivtyTime(usageData) {
+  const productiveApps = usageData.appUsage.filter(
+    (item) => item.category === "productive",
+  );
 
-    const webProductive = await WebUsage.find({
-      userId: userid,
-      category: "productive",
-      recordedAt: date,
-    });
+  const productiveWeb = usageData.webUsage.filter(
+    (item) => item.category === "productive",
+  );
 
-    if (appProductive.length == 0) {
-      return 0;
-    }
+  const appMinutes = productiveApps.reduce(
+    (total, item) => total + item.duration,
 
-    appProductiveMinutes = appProductive.reduce((total, item) => {
-      return total + item.duration;
-    }, 0);
+    0,
+  );
 
-    if (webProductive.length == 0) {
-      return 0;
-    }
+  const webMinutes = productiveWeb.reduce(
+    (total, item) => total + item.duration,
 
-    webProductiveMinutes = webProductive.reduce((total, item) => {
-      return total + item.duration;
-    }, 0);
+    0,
+  );
 
-    productiveMinutes = appProductiveMinutes + webProductiveMinutes;
-
-    return productiveMinutes;
-  } catch (error) {
-    console.error(error.message);
-  }
+  return appMinutes + webMinutes;
 }
 
-async function calculateUnProductivityTime(userid, date) {
-  let unproductiveMinutes = 0;
-  let appUnproductiveMinutes = 0;
-  let webUnproductiveMinutes = 0;
+function calculateUnProductivityTime(usageData) {
+  const unproductiveApps = usageData.appUsage.filter(
+    (item) => item.category === "unproductive",
+  );
 
-  try {
-    const appUnproductive = await AppUsage.find({
-      userId: userid,
-      category: "unproductive",
-      recordedAt: date,
-    });
+  const unproductiveWeb = usageData.webUsage.filter(
+    (item) => item.category === "unproductive",
+  );
 
-    const webUnproductive = await WebUsage.find({
-      userId: userid,
-      category: "unproductive",
-      recordedAt: date,
-    });
+  const appMinutes = unproductiveApps.reduce(
+    (total, item) => total + item.duration,
 
-    if (appUnproductive.length == 0) {
-      return 0;
-    }
+    0,
+  );
 
-    appUnproductiveMinutes = appUnproductive.reduce((total, item) => {
-      return total + item.duration;
-    }, 0);
+  const webMinutes = unproductiveWeb.reduce(
+    (total, item) => total + item.duration,
 
-    if (webUnproductive.length == 0) {
-      return 0;
-    }
+    0,
+  );
 
-    webUnproductiveMinutes = webUnproductive.reduce((total, item) => {
-      return total + item.duration;
-    }, 0);
-
-    unproductiveMinutes = appUnproductiveMinutes + webUnproductiveMinutes;
-
-    return unproductiveMinutes;
-  } catch (error) {
-    console.error(error.message);
-  }
+  return appMinutes + webMinutes;
 }
 
-async function calculateNeturalTime(userid, date) {
-  let neutralMinutes = 0;
-  let appNeutralMinutes = 0;
-  let webNeutralMinutes = 0;
+function calculateFocusScore(usageData) {
+  const productiveTime = calculateProductivtyTime(usageData);
 
-  try {
-    const appNeutral = await AppUsage.find({
-      userId: userid,
-      category: "neutral",
-      recordedAt: date,
-    });
-    if (appNeutral.length == 0) return 0;
+  const unproductiveTime = calculateUnProductivityTime(usageData);
 
-    const webNeutral = await WebUsage.find({
-      userId: userid,
-      category: "neutral",
-      recordedAt: date,
-    });
-    if (webNeutral.length == 0) return 0;
+  const idleTime = findIdleTime(usageData);
 
-    appNeutralMinutes = appNeutral.reduce((total, item) => {
-      return total + item.duration;
-    }, 0);
-    webNeutralMinutes = webNeutral.reduce((total, item) => {
-      return total + item.duration;
-    }, 0);
+  const totalWorkTime = productiveTime + unproductiveTime + idleTime;
 
-    neutralMinutes = appNeutralMinutes + webNeutralMinutes;
-    return neutralMinutes;
-  } catch (error) {
-    console.error(error.message);
-  }
+  if (totalWorkTime === 0) return 0;
+
+  return Math.round((productiveTime / totalWorkTime) * 100);
 }
 
-async function calculateProductivityScore(userid, date) {
-  const idleTime = await findIdleTime(userid, date);
+function calculateNeturalTime(usageData) {
+  const neutralApps = usageData.appUsage.filter(
+    (item) => item.category === "neutral",
+  );
 
-  const productivityTime = await calculateProductivtyTime(userid, date);
+  const neutralWeb = usageData.webUsage.filter(
+    (item) => item.category === "neutral",
+  );
 
-  const unProductivityTime = await calculateUnProductivityTime(userid, date);
+  const appMinutes = neutralApps.reduce(
+    (total, item) => total + item.duration,
+
+    0,
+  );
+
+  const webMinutes = neutralWeb.reduce(
+    (total, item) => total + item.duration,
+
+    0,
+  );
+
+  return appMinutes + webMinutes;
+}
+
+function calculateProductivityScore(usageData) {
+  const idleTime = findIdleTime(usageData);
+
+  const productivityTime = calculateProductivtyTime(usageData);
+
+  const unProductivityTime = calculateUnProductivityTime(usageData);
 
   const totalWorkTime = productivityTime + unProductivityTime + idleTime;
 
@@ -198,45 +158,71 @@ async function calculateProductivityScore(userid, date) {
       totalWorkTime) *
     100;
 
-  return score;
+  return Math.min(100, Math.max(0, Math.round(score)));
 }
 
-async function calculateProductivityScore(userid, date) {
-  let idleTime = 0;
-  let productivityTime = 0;
-  let unProductivityTime = 0;
-
-  idleTime = (await findIdleTime(userid, date)) * 0.3;
-  productivityTime = await calculateProductivtyTime(userid, date);
-  unProductivityTime = (await calculateUnProductivityTime(userid, date)) * 0.5;
-
-  return productivityTime - idleTime - unProductivityTime;
-}
-async function findIdleTime(userid, date) {
-  const result = await ActivityLog.find({ userId: userid, recordedAt: date });
-  if (result.length === 0) return 0;
-  const totalIdleSeconds = result.reduce(
+function findIdleTime(usageData) {
+  const totalIdleSeconds = usageData.activityLogs.reduce(
     (total, item) => total + item.idleSeconds,
+
     0,
   );
 
-  return totalIdleSeconds;
+  return Math.round(totalIdleSeconds / 60);
 }
 
-async function calculateTotalWorkMinute(userid, date) {
-  let neturalTime = 0;
-  let productiveTime = 0;
-  let unProductiveTime = 0;
+function calculateTotalWorkMinute(usageData) {
+  return (
+    calculateProductivtyTime(usageData) +
+    calculateUnProductivityTime(usageData) +
+    calculateNeturalTime(usageData) +
+    findIdleTime(usageData)
+  );
+}
 
-  neturalTime = await calculateNeturalTime(userid, date);
-  productiveTime = await calculateProductivtyTime(userid, date);
-  unProductiveTime = await calculateUnProductivityTime(userid, date);
+async function getDailyUsageData(userid, date) {
+  const { startOfDay, endOfDay } = getDateRange(date);
 
-  return productiveTime + unProductiveTime + neturalTime;
+  const appUsage = await AppUsage.find({
+    userId: userid,
+
+    recordedAt: {
+      $gte: startOfDay,
+
+      $lt: endOfDay,
+    },
+  });
+
+  const webUsage = await WebUsage.find({
+    userId: userid,
+
+    recordedAt: {
+      $gte: startOfDay,
+
+      $lt: endOfDay,
+    },
+  });
+
+  const activityLogs = await ActivityLog.find({
+    userId: userid,
+
+    recordedAt: {
+      $gte: startOfDay,
+
+      $lt: endOfDay,
+    },
+  });
+
+  return {
+    appUsage,
+
+    webUsage,
+
+    activityLogs,
+  };
 }
 
 function getDateRange(date) {
-  
   const startOfDay = new Date(date);
 
   startOfDay.setHours(0, 0, 0, 0);
