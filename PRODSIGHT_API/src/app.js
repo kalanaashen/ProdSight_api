@@ -24,6 +24,8 @@ app.use("/api/auth", require("./routes/auth"));
 app.use("/api/activity", require("./routes/activity"));
 app.use("/api/appusage", require("./routes/appUsage"));
 app.use("/api/webusage", require("./routes/webUsage"));
+app.use("/api/prosummary", require("./routes/productivitySummary"));
+app.use("api/analytics", require("./routes/analytics"));
 app.get("/", (req, res) => {
   res.send("Prodsight API running");
 });
