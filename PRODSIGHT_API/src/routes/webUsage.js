@@ -15,4 +15,4 @@ router.post("/", auth, createWebUsage);
 
 module.exports = router;
 
-console.log("webUsage routes loaded");
+
