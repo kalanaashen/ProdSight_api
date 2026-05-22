@@ -1,4 +1,4 @@
-const  productivitySummary  = require("../services/productivitySummary");
+const productivitySummary = require("../services/productivitySummary");
 
 exports.createProductivitySummary = async (req, res) => {
   try {
@@ -14,7 +14,7 @@ exports.createProductivitySummary = async (req, res) => {
 exports.getProductivitySummaryByUserId = async (req, res) => {
   try {
     const ProSummary = await productivitySummary.getProductivitySummaryByUserId(
-      req.params.id,
+      req.params.userId,
     );
     res.status(200).send(ProSummary);
   } catch (error) {
@@ -26,7 +26,7 @@ exports.getProductivitySummary = async (req, res) => {
   try {
     const ProSummary = await productivitySummary.getProductivitySummary();
     res.status(200).send(ProSummary);
-  } catch(error) {
+  } catch (error) {
     res.status(400).send(error.message);
   }
 };
