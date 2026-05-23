@@ -1,11 +1,11 @@
 const {
-  Activity,
+  ActivityLog,
   validateActivityLog,
 } = require("../models/activity");
 
 exports.getAllActivities = async () => {
 
-  return await Activity
+  return await ActivityLog
     .find()
     .sort({ recordedAt: -1 });
 
@@ -13,11 +13,11 @@ exports.getAllActivities = async () => {
 
 exports.getActivityById = async (id) => {
  
-  return await Activity.findById(id);
+  return await ActivityLog.findById(id);
 
 };
 
-exports.createActivity = async (data, userId) => {
+exports.createActivity = async (data) => {
 
   const { error } =
     validateActivityLog(data);
@@ -25,9 +25,9 @@ exports.createActivity = async (data, userId) => {
   if (error)
     throw new Error(error.details[0].message);
 
-  const activity = new Activity({
+  const activity = new ActivityLog({
 
-    user: userId,
+    userId: data.userId,
 
     keystrokes: data.keystrokes,
 

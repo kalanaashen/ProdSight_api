@@ -24,10 +24,18 @@ exports.getActivity = async (req, res) => {
 
 exports.createActivity = async (req, res) => {
   try {
-    const activity = await activityService.createActivity(
-      req.body,
-      req.user._id,
-    );
+    const activity = await activityService.createActivity({
+      
+      userId: req.user._id,
+
+      keystrokes: req.body.keystrokes,
+
+      mouseClicks: req.body.mouseClicks,
+
+      idleSeconds: req.body.idleSeconds,
+
+      activeWindow: req.body.activeWindow,
+    });
 
     res.status(201).send(activity);
   } catch (err) {

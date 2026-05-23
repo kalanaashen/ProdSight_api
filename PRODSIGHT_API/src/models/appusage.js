@@ -31,10 +31,10 @@ const appUsageSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
     required: true,
-  }
+  },
 });
 
-const AppUsage=mongoose.model("AppUsage", appUsageSchema);
+const AppUsage = mongoose.model("AppUsage", appUsageSchema);
 
 function validateAppUsage(data) {
   const schema = Joi.object({
@@ -42,9 +42,8 @@ function validateAppUsage(data) {
     appName: Joi.string().required(),
     windowTitle: Joi.string().required(),
     duration: Joi.number().required(),
-    category: Joi.string()
-      .valid("productive", "unproductive", "neutral")
-     
+    category: Joi.string().valid("productive", "unproductive", "neutral"),
+    recordedAt: Joi.date(),
   });
 
   return schema.validate(data);

@@ -10,7 +10,7 @@ const activityLogSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  mouseClickes: {
+  mouseClicks: {
     type: Number,
     required: true,
   },
@@ -33,9 +33,9 @@ const ActivityLog = mongoose.model("ActivityLog", activityLogSchema);
 
 const validateActivityLog = function (activityLog) {
   const schema = Joi.object({
-    userId: Joi.string().required(),
+    userId: Joi.string(),
     keystrokes: Joi.number().required(),
-    mouseClickes: Joi.number().required(),
+    mouseClicks: Joi.number().required(),
     idleSeconds: Joi.number().required(),
     activeWindow: Joi.string().required(),
     recordedAt: Joi.date(),
