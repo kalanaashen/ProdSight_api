@@ -5,7 +5,7 @@ const config = require("config");
 
 exports.registerUser = async (data) => {
   try {
-    const { error } = validateUser(data);
+    const { error } = await validateUser(data);
 
     if (error) {
       throw new Error(error.details[0].message);
@@ -27,6 +27,6 @@ exports.registerUser = async (data) => {
     await user.save();
     return { token, user: { name: user.name, email: user.email } };
   } catch (error) {
-    console.error(error);
+    throw error;
   }
 };
