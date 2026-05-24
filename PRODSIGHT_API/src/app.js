@@ -12,7 +12,7 @@ if (!config.get("jwtPrivateKey")) {
 require("dotenv").config();
 
 mongoose
-  .connect(process.env.MONGO_URI)
+  .connect(process.env.MONGO_LOCAL)
   .then(() => {
     console.log("Connected to MongoDB...");
   })
