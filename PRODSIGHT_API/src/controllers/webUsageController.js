@@ -1,4 +1,4 @@
-const { webUsageService } = require("../services/webUsageService");
+const webUsageService = require("../services/webUsageService");
 
 exports.getWebUsageByUserId = async (req, res) => {
   try {
@@ -15,7 +15,17 @@ exports.getWebUsageByUserId = async (req, res) => {
 
 exports.createWebUsage = async (req, res) => {
   try {
-    const webUsage = await webUsageService.createWebUsage(req.body);
+    const webUsage = await webUsageService.createWebUsage({
+      userId: req.user._id,
+
+      domain: req.body.domain,
+
+      url: req.body.url,
+
+      title: req.body.title,
+
+      duration: req.body.duration,
+    });
     res.status(201).send(webUsage);
   } catch (error) {
     res.status(500).send({ error: error.message });
@@ -30,4 +40,3 @@ exports.getWebUsage = async (req, res) => {
     res.status(500).send({ error: error.message });
   }
 };
-

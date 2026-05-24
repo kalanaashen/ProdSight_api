@@ -39,11 +39,12 @@ const WebUsage = mongoose.model("WebUsage", webUsageSchema);
 
 function validateWebUsage(data) {
   const schema = Joi.object({
-    userId: Joi.string().required(),
+    userId: Joi.string(),
     url: Joi.string().required(),
     title: Joi.string().required(),
     duration: Joi.number().required(),
     category: Joi.string().valid("productive", "unproductive", "neutral"),
+    recordedAt:Joi.date()
   });
 
   return schema.validate(data);
