@@ -3,7 +3,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const app = express();
 const config = require("config");
-
+const error = require("../middleware/error");
 if (!config.get("jwtPrivateKey")) {
   console.error("FATAL ERROR: jwtPrivateKey is not defined.");
   process.exit(1);
@@ -26,8 +26,6 @@ app.use("/api/appusage", require("./routes/appUsage"));
 app.use("/api/webusage", require("./routes/webUsage"));
 app.use("/api/prosummary", require("./routes/productivitySummary"));
 app.use("api/analytics", require("./routes/analytics"));
-app.get("/", (req, res) => {
-  res.send("Prodsight API running");
-});
+app.use(error);
 
 module.exports = app;
