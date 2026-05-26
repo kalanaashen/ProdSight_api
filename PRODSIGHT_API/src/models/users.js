@@ -25,10 +25,15 @@ const userSchema = new mongoose.Schema({
     maxlength: 255,
     trim: true,
   },
+  isAdmin:{
+    type:Boolean,
+    required:true,
+    default:false,
+  }
 });
 
 userSchema.methods.generateAuthToken = function () {
-  const token = jwt.sign({ _id: this._id }, config.get("jwtPrivateKey"));
+  const token = jwt.sign({ _id: this._id,isAdmin:this.isAdmin }, config.get("jwtPrivateKey"));
   return token;
 };
 
@@ -39,6 +44,7 @@ async function validateUser(user) {
     name: Joi.string().max(50).required(),
     email: Joi.string().email().required(),
     password: Joi.string().min(8).max(255).required(),
+    
   });
   return schema.validate(user);
 }

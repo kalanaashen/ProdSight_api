@@ -18,6 +18,7 @@ exports.registerUser = async (data) => {
       name: data.name,
       email: data.email,
       password: data.password,
+    
     });
 
     const salt = await bcrypt.genSalt(10);
@@ -25,7 +26,7 @@ exports.registerUser = async (data) => {
 
     const token = user.generateAuthToken();
     await user.save();
-    return { token, user: { name: user.name, email: user.email } };
+    return { token, user: { name: user.name, email: user.email,isAdmin:user.isAdmin } };
   } catch (error) {
     throw error;
   }

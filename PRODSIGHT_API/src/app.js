@@ -3,6 +3,8 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const app = express();
 const config = require("config");
+const auth=require("../middleware/auth");
+const admin=require("../middleware/admin");
 const error = require("../middleware/error");
 if (!config.get("jwtPrivateKey")) {
   console.error("FATAL ERROR: jwtPrivateKey is not defined.");
@@ -21,11 +23,11 @@ app.use(cors());
 app.use(express.json());
 app.use("/api/users", require("./routes/users"));
 app.use("/api/auth", require("./routes/auth"));
-app.use("/api/activity", require("./routes/activity"));
-app.use("/api/appusage", require("./routes/appUsage"));
-app.use("/api/webusage", require("./routes/webUsage"));
-app.use("/api/prosummary", require("./routes/productivitySummary"));
-app.use("api/analytics", require("./routes/analytics"));
+app.use("/api/activity",[auth,admin] ,require("./routes/activity"));
+app.use("/api/appusage",[auth,admin], require("./routes/appUsage"));
+app.use("/api/webusage", [auth,admin],require("./routes/webUsage"));
+app.use("/api/prosummary",[auth,admin], require("./routes/productivitySummary"));
+app.use("/api/analytics", [auth,admin],require("./routes/analytics"));
 app.use(error);
 
 module.exports = app;
