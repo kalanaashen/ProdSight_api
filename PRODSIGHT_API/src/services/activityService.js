@@ -1,5 +1,5 @@
 const { ActivityLog, validateActivityLog } = require("../models/activity");
-
+const { User } = require("../models/users");
 exports.getAllActivities = async () => {
   return await ActivityLog.find().sort({ recordedAt: -1 });
 };
@@ -23,6 +23,8 @@ exports.createActivity = async (data) => {
     activeWindow: data.activeWindow,
 
     idleSeconds: data.idleSeconds,
+
+    duration: data.duration,
 
     category: createCategory(data.activeWindow),
   });
@@ -64,3 +66,31 @@ function createCategory(appName) {
     return "neutral";
   }
 }
+
+exports.findTodayActivity = async (username, date) => {
+  const startDate = new Date(`${date}T00:00:00.000Z`);
+  const endDate = new Date(`${date}T23:59:59.999Z`);
+
+  const user = await User.findOne({
+    name: username,
+  });
+
+  if (!user) return "not valid user!";
+
+  return await ActivityLog.aggregate([
+    {
+      $match: {
+        userId: user._id,
+        recordedAt: { $gte: startDate, $lte: endDate },
+      },
+    },
+    {
+      $group: {
+        _id: "$userId",
+        totalKeyStrokes: { $sum: "$keystrokes" },
+        totalMouseClicks: { $sum: "$mouseClicks" },
+        totalDuration: { $sum: "$duration" },
+      },
+    },
+  ]);
+};

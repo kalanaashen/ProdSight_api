@@ -7,9 +7,12 @@ const {
   getActivities,
   getActivity,
   createActivity,
+  findTodayActivity,
 } = require("../controllers/activityController");
 
 router.get("/", auth, getActivities);
+
+router.get("/today/:username/:date", auth, findTodayActivity);
 
 router.get("/:id", auth, getActivity);
 

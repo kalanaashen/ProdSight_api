@@ -25,9 +25,16 @@ const activityLogSchema = new mongoose.Schema({
   category: {
     type: String,
     required: true,
-    enum: ["productive", "unproductive", "netural"],
-    default: "netural",
+    enum: ["productive", "unproductive", "neutral"],
+    default: "neutral",
   },
+
+  duration: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
+
   recordedAt: {
     type: Date,
     default: Date.now,
@@ -44,7 +51,8 @@ const validateActivityLog = function (activityLog) {
     mouseClicks: Joi.number().required(),
     idleSeconds: Joi.number().required(),
     activeWindow: Joi.string().required(),
-    category: Joi.string().valid(),
+    duration: Joi.number().required(),
+    category: Joi.string().valid("productive", "unproductive", "neutral"),
     recordedAt: Joi.date(),
   });
   return schema.validate(activityLog);
