@@ -25,7 +25,6 @@ exports.getActivity = async (req, res) => {
 exports.createActivity = async (req, res) => {
   try {
     const activity = await activityService.createActivity({
-      
       userId: req.user._id,
 
       keystrokes: req.body.keystrokes,
@@ -35,6 +34,8 @@ exports.createActivity = async (req, res) => {
       idleSeconds: req.body.idleSeconds,
 
       activeWindow: req.body.activeWindow,
+
+      category: req.body.category,
     });
 
     res.status(201).send(activity);

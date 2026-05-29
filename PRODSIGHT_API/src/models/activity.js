@@ -22,6 +22,12 @@ const activityLogSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  category: {
+    type: String,
+    required: true,
+    enum: ["productive", "unproductive", "netural"],
+    default: "netural",
+  },
   recordedAt: {
     type: Date,
     default: Date.now,
@@ -38,6 +44,7 @@ const validateActivityLog = function (activityLog) {
     mouseClicks: Joi.number().required(),
     idleSeconds: Joi.number().required(),
     activeWindow: Joi.string().required(),
+    category: Joi.string().valid(),
     recordedAt: Joi.date(),
   });
   return schema.validate(activityLog);
@@ -45,5 +52,5 @@ const validateActivityLog = function (activityLog) {
 
 module.exports = {
   ActivityLog,
-  validateActivityLog
+  validateActivityLog,
 };
