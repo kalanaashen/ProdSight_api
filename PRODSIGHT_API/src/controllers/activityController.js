@@ -25,7 +25,7 @@ exports.getActivity = async (req, res) => {
 exports.createActivity = async (req, res) => {
   try {
     const activity = await activityService.createActivity({
-      userId: req.user._id,
+      userId: req.user?._id || req.body.userId,
 
       keystrokes: req.body.keystrokes,
 
@@ -61,12 +61,16 @@ exports.findTodayActivity = async (req, res) => {
       totalKeyStrokes: 0,
       totalMouseClicks: 0,
       totalDuration: 0,
+      totalIdleSeconds: 0,
+      records: [],
     };
 
     res.status(200).json({
       totalKeyStrokes: summary.totalKeyStrokes,
       totalMouseClicks: summary.totalMouseClicks,
       totalDuration: summary.totalDuration,
+      totalIdleSeconds: summary.totalIdleSeconds,
+      records: summary.records,
     });
   } catch (error) {
     res.status(400).send(error.message);

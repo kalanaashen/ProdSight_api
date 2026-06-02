@@ -1,5 +1,6 @@
 const { ActivityLog, validateActivityLog } = require("../models/activity");
 const { User } = require("../models/users");
+const mongoose = require("mongoose");
 exports.getAllActivities = async () => {
   return await ActivityLog.find().sort({ recordedAt: -1 });
 };
@@ -80,7 +81,7 @@ exports.findTodayActivity = async (username, date) => {
   return await ActivityLog.aggregate([
     {
       $match: {
-        userId: user._id,
+        userId: new mongoose.Types.ObjectId(user._id),
         recordedAt: { $gte: startDate, $lte: endDate },
       },
     },
@@ -90,6 +91,8 @@ exports.findTodayActivity = async (username, date) => {
         totalKeyStrokes: { $sum: "$keystrokes" },
         totalMouseClicks: { $sum: "$mouseClicks" },
         totalDuration: { $sum: "$duration" },
+        totalIdleSeconds: { $sum: "$idleSeconds" },
+        records: { $push: "$$ROOT" },
       },
     },
   ]);

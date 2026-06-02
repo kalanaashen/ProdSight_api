@@ -46,7 +46,7 @@ const ActivityLog = mongoose.model("ActivityLog", activityLogSchema);
 
 const validateActivityLog = function (activityLog) {
   const schema = Joi.object({
-    userId: Joi.string(),
+    userId: Joi.string().required(),
     keystrokes: Joi.number().required(),
     mouseClicks: Joi.number().required(),
     idleSeconds: Joi.number().required(),
