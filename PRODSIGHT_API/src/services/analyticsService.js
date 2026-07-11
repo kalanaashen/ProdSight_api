@@ -1,12 +1,18 @@
 const { ProductivitySummary } = require("../models/productivitySummary");
 
 const { AppUsage } = require("../models/appusage");
+const mongoose = require("mongoose");
 
 exports.getDailyAnalytics = async (userId, date) => {
-  return await ProductivitySummary.findOne({
-    userId: userId,
+  const requestedDate = date ? new Date(date) : new Date();
+  const startOfDay = new Date(requestedDate);
+  const endOfDay = new Date(requestedDate);
+  startOfDay.setHours(0, 0, 0, 0);
+  endOfDay.setHours(23, 59, 59, 999);
 
-    summaryDate: date,
+  return await ProductivitySummary.findOne({
+    userId,
+    summaryDate: { $gte: startOfDay, $lte: endOfDay },
   });
 };
 
@@ -27,10 +33,14 @@ exports.getMonthlyAnalytics = async (userId) => {
 };
 
 exports.getTopApps = async (userId) => {
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    throw new Error("Invalid user ID");
+  }
+
   return await AppUsage.aggregate([
     {
       $match: {
-        userId: userId,
+        userId: new mongoose.Types.ObjectId(userId),
       },
     },
 
