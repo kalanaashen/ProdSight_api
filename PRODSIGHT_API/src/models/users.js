@@ -32,7 +32,16 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    default: "employee",
+    enum: [
+      "Software Engineer",
+      "Designer",
+      "Project Manager",
+      "QA Engineer",
+      "Human Resources",
+      "Employee",
+      "Other",
+    ],
+    default: "Employee",
   },
 });
 
@@ -51,6 +60,17 @@ async function validateUser(user) {
     name: Joi.string().max(50).required(),
     email: Joi.string().email().required(),
     password: Joi.string().min(8).max(255).required(),
+    role: Joi.string()
+      .valid(
+        "Software Engineer",
+        "Designer",
+        "Project Manager",
+        "QA Engineer",
+        "Human Resources",
+        "Employee",
+        "Other",
+      )
+      .required(),
   });
   return schema.validate(user);
 }

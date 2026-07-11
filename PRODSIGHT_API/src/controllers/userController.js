@@ -7,7 +7,8 @@ exports.registerUser=async(req,res)=>{
         const user=await userService.registerUser({
             name:req.body.name,
             email:req.body.email,
-            password:req.body.password
+            password:req.body.password,
+            role:req.body.role
         });
         res.status(201).send(user);
     } catch (error) {
@@ -42,4 +43,3 @@ exports.getUserById = async (req, res) => {
     res.status(400).send({ error: error.message });
   }
 };
-
