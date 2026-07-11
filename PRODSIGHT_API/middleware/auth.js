@@ -3,7 +3,9 @@ const config = require("config");
 
 function auth(req, res, next) {
 
-  const token = req.header("x-auth-token");
+  const authorization = req.header("authorization");
+  const token = req.header("x-auth-token") ||
+    (authorization?.startsWith("Bearer ") ? authorization.slice(7) : "");
   if (!token) return res.status(401).send("Access denied. No token provided.");
 
   try {

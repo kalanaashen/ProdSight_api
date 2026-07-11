@@ -31,3 +31,21 @@ exports.registerUser = async (data) => {
     throw error;
   }
 };
+
+exports.getUsers = async () => {
+  return User.find().select("-password").sort({ name: 1 });
+};
+
+exports.getUserById = async (id) => {
+  return User.findById(id).select("-password");
+};
+
+exports.getUserByName = async (name) => {
+  return User.findOne({
+    name: { $regex: `^${escapeRegExp(name)}$`, $options: "i" },
+  }).select("-password");
+};
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}

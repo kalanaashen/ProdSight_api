@@ -22,7 +22,7 @@ mongoose
 app.use(cors());
 app.use(express.json());
 app.use("/api/users", require("./routes/users"));
-app.use("/api/auth", [auth], require("./routes/auth"));
+app.use("/api/auth", require("./routes/auth"));
 app.use("/api/activity", require("./routes/activity"));
 app.use("/api/appusage", [auth, admin], require("./routes/appUsage"));
 app.use("/api/webusage", [auth, admin], require("./routes/webUsage"));

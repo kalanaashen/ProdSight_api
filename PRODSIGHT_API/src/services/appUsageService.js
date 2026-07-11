@@ -29,7 +29,7 @@ exports.getAllAppUsage = async () => {
 };
 exports.getAppUsageByUserId = async (Id) => {
   try {
-    return await AppUsage.findById({ userId: Id });
+    return await AppUsage.find({ userId: Id }).sort({ recordedAt: -1 });
   } catch (error) {
     console.error(error.message);
   }
